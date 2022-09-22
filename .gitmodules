@@ -1,0 +1,3 @@
+[submodule "cloudsend.sh"]
+	path = cloudsend.sh
+	url = https://github.com/tavinus/cloudsend.sh.git
