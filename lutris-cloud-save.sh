@@ -1,9 +1,13 @@
 #!/bin/bash
 
 # Shared folder for your cloud saves
-# CLOUDSAVE_FOLDER=
+# export CLOUDSAVE_FOLDER=
 # Enter the Password to your Shared Nextcloud folder here
-# CLOUDSEND_PASSWORD= 
+# export CLOUDSEND_PASSWORD=
+
+#Debug variables (Usually set by lutris upon game launch)
+# export WINEPREFIX=
+# export game_name=
 
 # Resolve Placeholders
 export LOCALAPPDATA=$WINEPREFIX/drive_c/users/$USER/AppData/Local
