@@ -6,7 +6,7 @@
 # CLOUDSEND_PASSWORD= 
 
 # Resolve Placeholders
-LOCALAPPDATA=$WINE_PREFIX/drive_c/users/$USER/AppData
+export LOCALAPPDATA=$WINEPREFIX/drive_c/users/$USER/AppData
 
 pip install pyyaml
 python ./main.py
