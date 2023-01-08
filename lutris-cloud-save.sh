@@ -4,6 +4,7 @@
 export FTP_HOSTNAME=""
 export FTP_USER=""
 export FTP_PASSWORD=""
+export FTP_SAVE_FOLDER=""
 
 #Debug variables (Usually set by lutris upon game launch)
 # export WINEPREFIX=
