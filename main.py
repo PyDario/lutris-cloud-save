@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import logging
+import pysftp
 
 game_name = os.environ.get("game_name")
 if game_name == None:
@@ -24,6 +25,10 @@ if ftp_password == None:
     logging.error("FTP_PASSWORD has not been set. Aborting")
     sys.exit(1)
 
+ftp_save_folder = os.environ.get("FTP_SAVE_FOLDER")
+if ftp_save_folder == None or ftp_save_folder == "":
+    ftp_save_folder = "./"
+
 placeholders = {
     "%LOCALAPPDATA%": os.environ.get("LOCALAPPDATA")
 }
@@ -40,3 +45,5 @@ with open("./lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r"
 for placeholder in placeholders:
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
 
+with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
+    sftp.put_r(save_file_location, ftp_save_folder+"/"+game_name, preserve_mtime=True)
