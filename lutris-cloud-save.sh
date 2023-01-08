@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Shared folder for your cloud saves
-# export CLOUDSAVE_FOLDER=
-# Enter the Password to your Shared Nextcloud folder here
-# export CLOUDSEND_PASSWORD=
+# FTP Data
+export FTP_HOSTNAME=""
+export FTP_USER=""
+export FTP_PASSWORD=""
 
 #Debug variables (Usually set by lutris upon game launch)
 # export WINEPREFIX=
