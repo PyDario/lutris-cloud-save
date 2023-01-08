@@ -1,6 +1,3 @@
-[submodule "cloudsend.sh"]
-	path = cloudsend.sh
-	url = https://github.com/tavinus/cloudsend.sh.git
 [submodule "lutris-save-file-locations.yml"]
 	path = lutris-save-file-locations.yml
 	url = https://github.com/PyDario/lutris-save-file-locations.yml.git
