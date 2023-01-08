@@ -14,4 +14,5 @@ export FTP_SAVE_FOLDER=""
 export LOCALAPPDATA=$WINEPREFIX/drive_c/users/$USER/AppData/Local
 
 pip install pyyaml
+pip install pysftp
 python ./main.py
