@@ -27,5 +27,3 @@ with open("./lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r"
 # Resolve placeholders
 for placeholder in placeholders:
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
-
-os.system("./cloudsend.sh/cloudsend.sh -e '" + save_file_location + "' '" + cloudsave_folder + "'")
