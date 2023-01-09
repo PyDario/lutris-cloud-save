@@ -4,7 +4,11 @@ import yaml
 import logging
 import pysftp
 
-is_load_mode = True
+
+is_load_mode = os.environ.get("IS_LOAD_MODE")
+if is_load_mode == None:
+    is_load_mode = False
+
 game_name = os.environ.get("game_name")
 if game_name == None:
     logging.error("game_name is not set. Check if the file was started from a lutris runtime")
