@@ -1,2 +1,2 @@
 # lutris-cloud-save
-Scripts to sync your save files in lutris to a shared nextcloud folder
+Script that syncs up your cloudsaves using sftp and python
