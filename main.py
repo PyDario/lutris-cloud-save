@@ -47,7 +47,9 @@ for placeholder in placeholders:
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
 
 with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
-    if not is_load_mode:
+    if is_load_mode:
+        sftp.get_d(ftp_save_folder+"/"+game_name, save_file_location, preserve_mtime=True)
+    else:
         sftp.put_r(save_file_location, ftp_save_folder+"/"+game_name, preserve_mtime=True)
     else:
         print (ftp_save_folder+"/"+game_name)
