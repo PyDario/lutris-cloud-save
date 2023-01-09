@@ -7,6 +7,9 @@
 # Resolve Placeholders
 export LOCALAPPDATA=$WINEPREFIX/drive_c/users/$USER/AppData/Local
 
+SCRIPT_PATH="$(dirname -- "${BASH_SOURCE[0]}")"            # relative
+export SCRIPT_PATH="$(cd -- "$SCRIPT_PATH" && pwd)"    # absolutized and normalized
+
 POSITIONAL_ARGS=()
 set -a
 while [[ $# -gt 0 ]]; do
@@ -61,4 +64,4 @@ fi
 # Install dependencies and start programm
 pip install pyyaml
 pip install pysftp
-python ./main.py
+python $SCRIPT_PATH/main.py

@@ -4,7 +4,6 @@ import yaml
 import logging
 import pysftp
 
-
 is_load_mode = os.environ.get("IS_LOAD_MODE")
 if is_load_mode == None:
     is_load_mode = False
@@ -14,6 +13,12 @@ if game_name == None:
     logging.error("game_name is not set. Check if the file was started from a lutris runtime")
     sys.exit(1)
 
+script_path = os.environ.get("SCRIPT_PATH")
+if script_path == None:
+    logging.error("script_path is not set. Check if the variable is correctly set")
+    sys.exit(1)
+
+print("Starting "+game_name+" with load_mode="+str(is_load_mode))
 # Get FTP data
 ftp_hostname = os.environ.get("FTP_HOSTNAME")
 if ftp_hostname == None:
@@ -39,7 +44,7 @@ placeholders = {
 }
 
 # Get save file location
-with open("./lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
+with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
     save_file_location = ''
     try: 
         save_file_location = yaml.safe_load(stream)[game_name]
