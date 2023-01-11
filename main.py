@@ -61,11 +61,20 @@ with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-location
 for placeholder in placeholders:
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
 
-with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
-    if is_load_mode:
-        if sftp.exists(ftp_save_folder+"/"+game_name):
-            sftp.get_d(ftp_save_folder+"/"+game_name, save_file_location, preserve_mtime=True)
+try:
+    with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
+        if not sftp.exists(ftp_save_folder):
+            logging.error("Remote save folder is invalid. Please check if it points to the right location")
+            sys.exit(1)
+
+        if is_load_mode:
+            if sftp.exists(ftp_save_folder+"/"+game_name):
+                sftp.get_d(ftp_save_folder+"/"+game_name, save_file_location, preserve_mtime=True)
+            else:
+                logging.info("No cloud save available")
         else:
-            logging.info("No cloud save available")
-    else:
-        sftp.put_r(save_file_location, ftp_save_folder+"/"+game_name, preserve_mtime=True)
+            sftp.put_r(save_file_location, ftp_save_folder+"/"+game_name, preserve_mtime=True)
+except:
+    logging.error("SFTP Connection could not be established. \
+                Please check if you have a running internet connection and the FTP connection data is valid")
+    sys.exit(1)
