@@ -47,9 +47,15 @@ placeholders = {
 with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
     save_file_location = ''
     try: 
-        save_file_location = yaml.safe_load(stream)[game_name]
+        save_file_location = yaml.safe_load(stream).setdefault(game_name, "")
+        if save_file_location == "":
+            logging.error("No save file location found for this game. \
+                        Please contact the maintainer to add your game to the list")
+        sys.exit(1)
     except yaml.YAMLError as exc:
-        print(exc)
+        logging.critical("lutris-save-file-locations.yml could not be opened")
+        logging.critical("Stacktrace: "+exc)
+        sys.exit(1)
 
 # Resolve placeholders
 for placeholder in placeholders:
