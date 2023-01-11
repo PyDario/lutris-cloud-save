@@ -57,6 +57,9 @@ for placeholder in placeholders:
 
 with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
     if is_load_mode:
-        sftp.get_d(ftp_save_folder+"/"+game_name, save_file_location, preserve_mtime=True)
+        if sftp.exists(ftp_save_folder+"/"+game_name):
+            sftp.get_d(ftp_save_folder+"/"+game_name, save_file_location, preserve_mtime=True)
+        else:
+            logging.info("No cloud save available")
     else:
         sftp.put_r(save_file_location, ftp_save_folder+"/"+game_name, preserve_mtime=True)
