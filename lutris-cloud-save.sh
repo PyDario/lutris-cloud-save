@@ -15,7 +15,11 @@ set -a
 while [[ $# -gt 0 ]]; do
     case $1 in
         -l|--load)
-            IS_LOAD_MODE=TRUE
+            IS_LOAD_MODE=1
+            shift
+            ;;
+        --keep-os-seperate)
+            KEEP_OS_SEPERATE=1
             shift
             ;;
         --config)

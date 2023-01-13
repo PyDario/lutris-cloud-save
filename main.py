@@ -4,9 +4,8 @@ import yaml
 import logging
 import pysftp
 
-is_load_mode = os.environ.get("IS_LOAD_MODE")
-if is_load_mode == None:
-    is_load_mode = False
+is_load_mode = False if os.environ.get("IS_LOAD_MODE") == None : True
+keep_os_seperate = False if os.environ.get("KEEP_OS_SEPERATE") == None : True
 
 game_name = os.environ.get("game_name")
 if game_name == None:
