@@ -43,11 +43,14 @@ placeholders = {
     "$XDG_CONFIG_HOME": os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")+"/.config"
 }
 
+starter = "win" if os.environ.get("WINE") != None else "linux"
+
 # Get save file location
 with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
     save_file_location = ''
     try: 
-        save_file_location = yaml.safe_load(stream).setdefault(game_name, "")
+        loaded_yaml = yaml.safe_load(stream);
+        save_file_location = loaded_yaml[game_name].setdefault(starter, "") if loaded_yaml.get(game_name) != None else ""
         if save_file_location == "":
             logging.error("No save file location found for this game. \
                         Please contact the maintainer to add your game to the list")
