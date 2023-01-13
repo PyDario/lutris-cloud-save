@@ -39,7 +39,8 @@ if ftp_save_folder == None or ftp_save_folder == "":
     ftp_save_folder = "./"
 
 placeholders = {
-    "%LOCALAPPDATA%": os.environ.get("LOCALAPPDATA")
+    "%LOCALAPPDATA%": os.environ.get("LOCALAPPDATA"),
+    "$XDG_CONFIG_HOME": os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")+"/.config"
 }
 
 # Get save file location
