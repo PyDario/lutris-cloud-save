@@ -48,13 +48,14 @@ starter = "win" if os.environ.get("WINE") != None else "linux"
 # Get save file location
 with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
     save_file_location = ''
-    try: 
+    try:
         loaded_yaml = yaml.safe_load(stream);
         save_file_location = loaded_yaml[game_name].setdefault(starter, "") if loaded_yaml.get(game_name) != None else ""
         if save_file_location == "":
-            logging.error("No save file location found for this game. \
-                        Please contact the maintainer to add your game to the list")
-        sys.exit(1)
+            logging.error("No save file location found for this game. " + \
+                        "Please contact the maintainer to add your game to the list")
+            sys.exit(1)
+        logging.info("save file location: " + save_file_location)
     except yaml.YAMLError as exc:
         logging.critical("lutris-save-file-locations.yml could not be opened")
         logging.critical("Stacktrace: "+exc)
@@ -62,6 +63,9 @@ with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-location
 
 # Resolve placeholders
 for placeholder in placeholders:
+    if placeholders[placeholder] == None:
+        logging.error("Path:" + placeholder + " was not correctly set. Save folder could not be determined")
+        sys.exit(1)
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
 
 try:
@@ -70,13 +74,18 @@ try:
             logging.error("Remote save folder is invalid. Please check if it points to the right location")
             sys.exit(1)
 
+        ftp_save_folder += "/" + game_name
         if is_load_mode:
-            if sftp.exists(ftp_save_folder+"/"+game_name):
-                sftp.get_d(ftp_save_folder+"/"+game_name, save_file_location, preserve_mtime=True)
+            if sftp.exists(ftp_save_folder):
+                sftp.get_d(ftp_save_folder, save_file_location, preserve_mtime=True)
             else:
                 logging.info("No cloud save available")
         else:
-            sftp.put_r(save_file_location, ftp_save_folder+"/"+game_name, preserve_mtime=True)
+            if not sftp.exists(ftp_save_folder):
+                logging.info("No existing save file. Create new")
+                sftp.mkdir(ftp_save_folder)
+
+            sftp.put_r(save_file_location, ftp_save_folder, preserve_mtime=True)
 except:
     logging.error("SFTP Connection could not be established. \
                 Please check if you have a running internet connection and the FTP connection data is valid")
