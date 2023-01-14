@@ -7,30 +7,26 @@ import pysftp
 is_load_mode = bool(os.environ.get("IS_LOAD_MODE"))
 keep_os_seperate = bool(os.environ.get("KEEP_OS_SEPERATE"))
 
-game_name = os.environ.get("game_name")
-if game_name == None:
+if not (game_name := os.environ.get("game_name")):
     logging.error("game_name is not set. Check if the file was started from a lutris runtime")
     sys.exit(1)
 
-script_path = os.environ.get("SCRIPT_PATH")
-if script_path == None:
+if not (script_path := os.environ.get("SCRIPT_PATH")):
     logging.error("script_path is not set. Check if the variable is correctly set")
     sys.exit(1)
 
+logging.info("Starting "+game_name+" with load_mode="+str(is_load_mode))
 print("Starting "+game_name+" with load_mode="+str(is_load_mode))
 # Get FTP data
-ftp_hostname = os.environ.get("FTP_HOSTNAME")
-if ftp_hostname == None:
+if not (ftp_hostname := os.environ.get("FTP_HOSTNAME")):
     logging.error("FTP_HOSTNAME has not been set. Aborting")
     sys.exit(1)
 
-ftp_user = os.environ.get("FTP_USER")
-if ftp_user == None:
+if not (ftp_user := os.environ.get("FTP_USER")):
     logging.error("FTP_USER has not been set. Aborting")
     sys.exit(1)
 
-ftp_password = os.environ.get("FTP_PASSWORD")
-if ftp_password == None:
+if not (ftp_password := os.environ.get("FTP_PASSWORD")):
     logging.error("FTP_PASSWORD has not been set. Aborting")
     sys.exit(1)
 
@@ -43,7 +39,7 @@ placeholders = {
     "$XDG_CONFIG_HOME": os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")+"/.config"
 }
 
-starter = "win" if os.environ.get("WINE") != None else "linux"
+starter = "win" if bool(os.environ.get("WINE")) else "linux"
 
 # Get save file location
 with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
@@ -68,6 +64,7 @@ for placeholder in placeholders:
         sys.exit(1)
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
 
+# Up- or Download file
 try:
     with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
         if not sftp.exists(ftp_save_folder):
@@ -82,7 +79,7 @@ try:
                 logging.info("No cloud save available")
         else:
             if not sftp.exists(ftp_save_folder):
-                logging.info("No existing save file. Create new")
+                logging.info("No existing save folder. Create new")
                 sftp.mkdir(ftp_save_folder)
 
             sftp.put_r(save_file_location, ftp_save_folder, preserve_mtime=True)
