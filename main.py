@@ -4,8 +4,8 @@ import yaml
 import logging
 import pysftp
 
-is_load_mode = False if os.environ.get("IS_LOAD_MODE") == None else True
-keep_os_seperate = False if os.environ.get("KEEP_OS_SEPERATE") == None else True
+is_load_mode = bool(os.environ.get("IS_LOAD_MODE"))
+keep_os_seperate = bool(os.environ.get("KEEP_OS_SEPERATE"))
 
 game_name = os.environ.get("game_name")
 if game_name == None:
@@ -74,7 +74,7 @@ try:
             logging.error("Remote save folder is invalid. Please check if it points to the right location")
             sys.exit(1)
 
-        ftp_save_folder += "/" + game_name
+        ftp_save_folder += "/" + (starter+"/" if keep_os_seperate else "") + game_name
         if is_load_mode:
             if sftp.exists(ftp_save_folder):
                 sftp.get_d(ftp_save_folder, save_file_location, preserve_mtime=True)
