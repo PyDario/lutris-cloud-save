@@ -35,9 +35,9 @@ parser.add_argument(
     help="Keep save files of different operation systems in their respective folder"
 )
 parser.add_argument(
-    "--config",
-    default=home_folder+"/.config/lutris-cloud-savec",
-    help="Alternative path for a config file. Default is $HOME/.config/lutris-cloud-savec"
+    "--ftp-config",
+    default=env_HOME+"/.config/lutris-cloud-savec",
+    help="Alternatively to arguments, an ftp-config file can be provided. This file has a higher priority than the arguments"
 )
 parser.add_argument(
     "-ftph", "--hostname",
@@ -71,26 +71,31 @@ logging.info("Starting "+env_game_name+" with load_mode="+str(args.load))
 print("Starting "+env_game_name+" with load_mode="+str(args.load))
 
 # Get FTP data
-if not (ftp_hostname := os.environ.get("FTP_HOSTNAME")):
-    logging.error("FTP_HOSTNAME has not been set. Aborting")
+if args.ftp_config and os.path.exists(args.ftp_config):
+    with open(args.ftp_config, "r") as stream:
+        try:
+            loaded_yaml = yaml.safe_load(stream);
+            args.hostname = loaded_yaml.ftp_hostname
+            args.user = loaded_yaml.ftp_user
+            args.password = loaded_yaml.ftp_password
+            args.ftp_save_folder = loaded_yaml.ftp_save_folder
+        except yaml.YAMLError as exc:
+            print(exc)
+
+if not args.ftp_hostname:
+    logging.error("ftp-hostname has not been set. Aborting")
     sys.exit(1)
 
-if not (ftp_user := os.environ.get("FTP_USER")):
-    logging.error("FTP_USER has not been set. Aborting")
+if not args.ftp_user:
+    logging.error("ftp-user has not been set. Aborting")
     sys.exit(1)
 
-if not (ftp_password := os.environ.get("FTP_PASSWORD")):
-    logging.error("FTP_PASSWORD has not been set. Aborting")
+if not args.ftp_password:
+    logging.error("ftp-password has not been set. Aborting")
     sys.exit(1)
 
-ftp_save_folder = os.environ.get("FTP_SAVE_FOLDER")
-if ftp_save_folder == None or ftp_save_folder == "":
-    ftp_save_folder = "./"
-
-placeholders = {
-    "%LOCALAPPDATA%": os.environ.get("LOCALAPPDATA"),
-    "$XDG_CONFIG_HOME": os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")+"/.config"
-}
+if not bool(args.ftp_save_folder):
+    args.ftp_save_folder = "./"
 
 starter = "win" if env_WINEPREFIX else "linux"
 
