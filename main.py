@@ -102,6 +102,10 @@ for placeholder in placeholders:
         sys.exit(1)
     save_file_location = save_file_location.replace(placeholder, placeholders[placeholder])
 
+if not os.path.exists(save_file_location):
+    logging.warning("Save file location doesn't exist. This could be due to the fact, that no save file has been written yet")
+    sys.exit(0)
+
 # Up- or Download file
 try:
     with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
@@ -115,6 +119,7 @@ try:
                 sftp.get_d(ftp_save_folder, save_file_location, preserve_mtime=True)
             else:
                 logging.info("No cloud save available")
+                sys.exit(0)
         else:
             if not sftp.exists(ftp_save_folder):
                 logging.info("No existing save folder. Create new")
