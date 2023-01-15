@@ -39,7 +39,7 @@ placeholders = {
     "$XDG_CONFIG_HOME": os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")+"/.config"
 }
 
-starter = "win" if bool(os.environ.get("WINE")) else "linux"
+starter = "win" if bool(os.environ.get("WINEPREFIX")) else "linux"
 
 # Get save file location
 with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
