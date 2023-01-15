@@ -3,6 +3,44 @@ import sys
 import yaml
 import logging
 import pysftp
+import argparse
+
+if not (home_folder := os.environ.get("HOME")):
+    logging.critical("$HOME is not set! Please ensure your environment is properly set up")
+    sys.exit(1)
+
+# Pass and evaluate arguments
+parser = argparse.ArgumentParser(description="Backs up and downloads your Lutris save files using SFTP")
+parser.add_argument(
+    "-l", "--load",
+    help="If this option is set, the save file will be fetched from remote"
+)
+parser.add_argument(
+    "--keep_os_seperate",
+    help="Keep save files of different operation systems in their respective folder"
+)
+parser.add_argument(
+    "--config",
+    default=home_folder+"/.config/lutris-cloud-savec",
+    help="Alternative path for a config file. Default is $HOME/.config/lutris-cloud-savec"
+)
+parser.add_argument(
+    "-ftph", "--hostname",
+    help="FTP Hostname"
+)
+parser.add_argument(
+    "-ftpu", "--user",
+    help="FTP Username"
+)
+parser.add_argument(
+    "-ftpp", "--password",
+    help="FTP Password"
+)
+parser.add_argument(
+    "-ftpdir", "--ftp-savefolder",
+    help="Remote folder location for the save files"
+)
+args = parser.parse_args()
 
 is_load_mode = bool(os.environ.get("IS_LOAD_MODE"))
 keep_os_seperate = bool(os.environ.get("KEEP_OS_SEPERATE"))
