@@ -8,6 +8,9 @@ import argparse
 if not (home_folder := os.environ.get("HOME")):
     logging.critical("$HOME is not set! Please ensure your environment is properly set up")
     sys.exit(1)
+if not (game_name := os.environ.get("game_name")):
+    logging.error("game_name is not set. Check if the file was started from a lutris runtime")
+    sys.exit(1)
 
 # Pass and evaluate arguments
 parser = argparse.ArgumentParser(description="Backs up and downloads your Lutris save files using SFTP")
@@ -44,10 +47,6 @@ args = parser.parse_args()
 
 is_load_mode = bool(os.environ.get("IS_LOAD_MODE"))
 keep_os_seperate = bool(os.environ.get("KEEP_OS_SEPERATE"))
-
-if not (game_name := os.environ.get("game_name")):
-    logging.error("game_name is not set. Check if the file was started from a lutris runtime")
-    sys.exit(1)
 
 if not (script_path := os.environ.get("SCRIPT_PATH")):
     logging.error("script_path is not set. Check if the variable is correctly set")
