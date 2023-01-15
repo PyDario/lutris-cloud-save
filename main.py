@@ -62,9 +62,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-is_load_mode = bool(os.environ.get("IS_LOAD_MODE"))
-keep_os_seperate = bool(os.environ.get("KEEP_OS_SEPERATE"))
-
 config_folder = ".config" if args.dev else env_XDG_CONFIG_HOME+"/lutris-cloud-save"
 
 logging.info("Starting "+env_game_name+" with load_mode="+str(args.load))
