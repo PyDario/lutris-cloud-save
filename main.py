@@ -5,10 +5,20 @@ import logging
 import pysftp
 import argparse
 
-if not (home_folder := os.environ.get("HOME")):
+env_HOME = os.environ.get("HOME")
+env_USER = os.environ.get("USER")
+env_XDG_CONFIG_HOME = os.environ.get("XDG_CONFIG_HOME") or env_HOME+"/.config"
+env_game_name = os.environ.get("game_name")
+env_WINEPREFIX = os.environ.get("WINEPREFIX")
+
+placeholders = {
+    "%LOCALAPPDATA%": (env_WINEPREFIX or "") + "/drive_c/users/"+env_USER+"/AppData/Local",
+}
+
+if not env_HOME:
     logging.critical("$HOME is not set! Please ensure your environment is properly set up")
     sys.exit(1)
-if not (game_name := os.environ.get("game_name")):
+if not env_game_name:
     logging.error("game_name is not set. Check if the file was started from a lutris runtime")
     sys.exit(1)
 
@@ -16,6 +26,7 @@ if not (game_name := os.environ.get("game_name")):
 parser = argparse.ArgumentParser(description="Backs up and downloads your Lutris save files using SFTP")
 parser.add_argument(
     "-l", "--load",
+    action="store_true",
     help="If this option is set, the save file will be fetched from remote"
 )
 parser.add_argument(
@@ -52,8 +63,9 @@ if not (script_path := os.environ.get("SCRIPT_PATH")):
     logging.error("script_path is not set. Check if the variable is correctly set")
     sys.exit(1)
 
-logging.info("Starting "+game_name+" with load_mode="+str(is_load_mode))
-print("Starting "+game_name+" with load_mode="+str(is_load_mode))
+logging.info("Starting "+env_game_name+" with load_mode="+str(args.load))
+print("Starting "+env_game_name+" with load_mode="+str(args.load))
+
 # Get FTP data
 if not (ftp_hostname := os.environ.get("FTP_HOSTNAME")):
     logging.error("FTP_HOSTNAME has not been set. Aborting")
@@ -76,7 +88,7 @@ placeholders = {
     "$XDG_CONFIG_HOME": os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")+"/.config"
 }
 
-starter = "win" if bool(os.environ.get("WINEPREFIX")) else "linux"
+starter = "win" if env_WINEPREFIX else "linux"
 
 # Get save file location
 with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
@@ -113,7 +125,7 @@ try:
             sys.exit(1)
 
         ftp_save_folder += "/" + (starter+"/" if keep_os_seperate else "") + game_name
-        if is_load_mode:
+        if args.load:
             if sftp.exists(ftp_save_folder):
                 sftp.get_d(ftp_save_folder, save_file_location, preserve_mtime=True)
             else:
