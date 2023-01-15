@@ -1,0 +1,3 @@
+[submodule "gaming-save-file-locations.yml"]
+	path = gaming-save-file-locations.yml
+	url = https://github.com/PyDario/gaming-save-file-locations.yml.git
