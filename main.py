@@ -31,6 +31,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--keep_os_seperate",
+    action="store_true",
     help="Keep save files of different operation systems in their respective folder"
 )
 parser.add_argument(
@@ -51,17 +52,20 @@ parser.add_argument(
     help="FTP Password"
 )
 parser.add_argument(
-    "-ftpdir", "--ftp-savefolder",
+    "-ftpdir", "--ftp-save-folder",
     help="Remote folder location for the save files"
+)
+parser.add_argument(
+    "--dev",
+    action="store_true",
+    help="This program was started in a dev environment"
 )
 args = parser.parse_args()
 
 is_load_mode = bool(os.environ.get("IS_LOAD_MODE"))
 keep_os_seperate = bool(os.environ.get("KEEP_OS_SEPERATE"))
 
-if not (script_path := os.environ.get("SCRIPT_PATH")):
-    logging.error("script_path is not set. Check if the variable is correctly set")
-    sys.exit(1)
+config_folder = ".config" if args.dev else env_XDG_CONFIG_HOME+"/lutris-cloud-save"
 
 logging.info("Starting "+env_game_name+" with load_mode="+str(args.load))
 print("Starting "+env_game_name+" with load_mode="+str(args.load))
