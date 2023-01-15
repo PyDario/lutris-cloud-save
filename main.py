@@ -13,7 +13,9 @@ env_WINEPREFIX = os.environ.get("WINEPREFIX")
 
 placeholders = {
     "%LOCALAPPDATA%": (env_WINEPREFIX or "") + "/drive_c/users/"+env_USER+"/AppData/Local",
+    "XDG_CONFIG_HOME": env_XDG_CONFIG_HOME
 }
+
 
 if not env_HOME:
     logging.critical("$HOME is not set! Please ensure your environment is properly set up")
@@ -36,7 +38,6 @@ parser.add_argument(
 )
 parser.add_argument(
     "--ftp-config",
-    default=env_HOME+"/.config/lutris-cloud-savec",
     help="Alternatively to arguments, an ftp-config file can be provided. This file has a higher priority than the arguments"
 )
 parser.add_argument(
@@ -72,22 +73,22 @@ if args.ftp_config and os.path.exists(args.ftp_config):
     with open(args.ftp_config, "r") as stream:
         try:
             loaded_yaml = yaml.safe_load(stream);
-            args.hostname = loaded_yaml.ftp_hostname
-            args.user = loaded_yaml.ftp_user
-            args.password = loaded_yaml.ftp_password
-            args.ftp_save_folder = loaded_yaml.ftp_save_folder
+            args.hostname = loaded_yaml["ftp_hostname"]
+            args.user = loaded_yaml["ftp_user"]
+            args.password = loaded_yaml["ftp_password"]
+            args.ftp_save_folder = loaded_yaml["ftp_save_folder"]
         except yaml.YAMLError as exc:
             print(exc)
 
-if not args.ftp_hostname:
+if not args.hostname:
     logging.error("ftp-hostname has not been set. Aborting")
     sys.exit(1)
 
-if not args.ftp_user:
+if not args.user:
     logging.error("ftp-user has not been set. Aborting")
     sys.exit(1)
 
-if not args.ftp_password:
+if not args.password:
     logging.error("ftp-password has not been set. Aborting")
     sys.exit(1)
 
@@ -97,11 +98,11 @@ if not bool(args.ftp_save_folder):
 starter = "win" if env_WINEPREFIX else "linux"
 
 # Get save file location
-with open(script_path+"/lutris-save-file-locations.yml/lutris-save-file-locations.yml", "r") as stream:
+with open(config_folder+"/save-file-locations/gaming-save-file-locations.yml", "r") as stream:
     save_file_location = ''
     try:
         loaded_yaml = yaml.safe_load(stream);
-        save_file_location = loaded_yaml[game_name].setdefault(starter, "") if loaded_yaml.get(game_name) != None else ""
+        save_file_location = loaded_yaml[env_game_name].setdefault(starter, "") if loaded_yaml.get(env_game_name) != None else ""
         if save_file_location == "":
             logging.error("No save file location found for this game. " + \
                         "Please contact the maintainer to add your game to the list")
@@ -125,12 +126,12 @@ if not os.path.exists(save_file_location):
 
 # Up- or Download file
 try:
-    with pysftp.Connection(ftp_hostname, username=ftp_user, password=ftp_password) as sftp:
-        if not sftp.exists(ftp_save_folder):
+    with pysftp.Connection(args.hostname, username=args.user, password=args.password) as sftp:
+        if not sftp.exists(args.ftp_save_folder):
             logging.error("Remote save folder is invalid. Please check if it points to the right location")
             sys.exit(1)
 
-        ftp_save_folder += "/" + (starter+"/" if keep_os_seperate else "") + game_name
+        ftp_save_folder = args.ftp_save_folder + "/" + (starter+"/" if args.keep_os_seperate else "") + env_game_name
         if args.load:
             if sftp.exists(ftp_save_folder):
                 sftp.get_d(ftp_save_folder, save_file_location, preserve_mtime=True)
