@@ -13,7 +13,7 @@ env_WINEPREFIX = os.environ.get("WINEPREFIX")
 
 placeholders = {
     "%LOCALAPPDATA%": (env_WINEPREFIX or "") + "/drive_c/users/"+env_USER+"/AppData/Local",
-    "XDG_CONFIG_HOME": env_XDG_CONFIG_HOME
+    "$XDG_CONFIG_HOME": env_XDG_CONFIG_HOME
 }
 
 
